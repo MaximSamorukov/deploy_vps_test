@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './page.module.scss'
 
 interface Message {
@@ -8,27 +8,29 @@ interface Message {
   message: string
 }
 
-const mockMessages: Message[] = [
-  { id: 1, message: 'Первое сообщение' },
-  { id: 2, message: 'Второе сообщение' },
-  { id: 3, message: 'Третье сообщение' },
-]
-
 export default function Home() {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState<Message[]>(mockMessages)
+  const [messages, setMessages] = useState<Message[]>([])
 
-  const handleSave = () => {
+  useEffect(() => {
+    fetch('/api/messages')
+      .then((r) => r.json())
+      .then(setMessages)
+  }, [])
+
+  const handleSave = async () => {
     if (!input.trim()) return
-    const newMessage: Message = {
-      id: Date.now(),
-      message: input,
-    }
-    setMessages([...messages, newMessage])
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      body: JSON.stringify({ message: input }),
+    })
+    const created = await res.json()
+    setMessages([...messages, created])
     setInput('')
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
+    await fetch(`/api/messages/${id}`, { method: 'DELETE' })
     setMessages(messages.filter((m) => m.id !== id))
   }
 
