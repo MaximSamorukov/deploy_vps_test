@@ -17,7 +17,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            cd /deploy_vps_test/app
+            cd /deploy_project/deploy_vps_test/app
             git pull origin main
             docker compose down
             docker compose up -d --build
