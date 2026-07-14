@@ -10,14 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.5
+        uses: appleboy/ssh-action@v1.0.1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
             cd /deploy_vps_test/app
             git pull origin main
-            docker-compose down
-            docker-compose up -d --build
+            docker compose down
+            docker compose up -d --build
             docker image prune -f
+            sleep 5
+            curl -f http://localhost:3000 || exit 1
