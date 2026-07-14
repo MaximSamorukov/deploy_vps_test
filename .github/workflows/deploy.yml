@@ -21,6 +21,7 @@ jobs:
             git pull origin main
             docker compose down
             docker compose up -d --build
+            docker compose exec -T app npx prisma migrate deploy
             docker image prune -f
             sleep 5
             curl -f http://localhost:3000 || exit 1
