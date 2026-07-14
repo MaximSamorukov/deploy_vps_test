@@ -17,12 +17,13 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            cd ~/deploy_project/deploy_vps_test/app
-            git pull origin main
+            cd ~/deploy_project/deploy_vps_test
             cat > .env << 'EOF'
             DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/mydb
             NODE_ENV=production
             EOF
+            cd ~/deploy_project/deploy_vps_test/app
+            git pull origin main
             docker compose down
             docker compose up -d --build
             docker compose exec -T app npx prisma migrate deploy
